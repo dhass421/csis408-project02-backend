@@ -1,9 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { getRequests } = require("../controllers/requestsController");
+const { getRequests, createRequest, approveRequest, deleteRequest } = require("../controllers/requestsController");
 
 router
     .route('/')
-    .get(getRequests);
+    .get(getRequests)
+    .post(createRequest)
+    
+
+router
+    .route('/:id')
+    .patch(approveRequest)
+    .delete(deleteRequest);
+
 
 module.exports = router;

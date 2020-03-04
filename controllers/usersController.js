@@ -26,14 +26,13 @@ exports.createUser = async (req, res, next) => {
     });
 
     try {
-        //const { email, password } = req.body;
 
         //Create new user
         const savedUser = await User.create(user);
     
-        return res.status(201).json({
+        return res.status(201).json({ //201 new object created
             success: true,
-            data: user.id //might need to change for testing purposes
+            data: user.id //will send back user id
         });      
     } catch (error) {
 
@@ -72,8 +71,5 @@ exports.loginUser = async (req, res, next) => {
 
     //Create and assign token
     const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET);
-    res.header('auth-token', token).send(token);
-
-    //res.status(200).send('Logged in!');
-
+    res.header('auth-token', token).status(200).send(token);
 }

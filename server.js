@@ -18,7 +18,7 @@ app.use(express.json());
 
 app.use('/api/requests', requests);
 app.use('/api/users', users);
-app.use('/api/admin', admin);
+app.use('/api/admin', admin); //auth route
 
 const PORT = process.env.PORT || 5000;
 

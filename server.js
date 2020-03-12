@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const dotenv = require('dotenv');
 const colors = require('colors');
 const morgan = require('morgan');
@@ -15,10 +16,12 @@ const admin = require('./routes/admin');
 const app = express();
 
 app.use(express.json());
+//app.use(cors());
+app.options('*', cors())
 
-app.use('/api/requests', requests);
-app.use('/api/users', users);
-app.use('/api/admin', admin); //auth route
+app.use('/api/requests', cors(), requests);
+app.use('/api/users', cors(), users);
+app.use('/api/admin', cors(), admin); //auth route
 
 const PORT = process.env.PORT || 5000;
 

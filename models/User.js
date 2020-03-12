@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema({
         required: [true, 'Please enter a password']
     },
     isAdmin: {
-        type: Boolean,
+        type: String,
         default: false
     },
     createdAt: {

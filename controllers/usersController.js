@@ -1,21 +1,42 @@
 const User = require('../models/User');
+const { registerValidation, loginValidation } = require('../config/validation');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // @desc    Create new user
 // @route   POST /api/users/signup
 // @access   Public
 exports.createUser = async (req, res, next) => {
-    try {
-        const { email, password } = req.body;
-
-        const user = await User.create(req.body);
     
-        return res.status(201).json({
+    //Validate data
+    const { error } = registerValidation(req.body);
+    if(error) return res.status(400).send(error.details[0].message);
+
+    //Check if the email already exists
+    const emailExist = await User.findOne({email: req.body.email});
+    if (emailExist) return res.status(400).send('Email already exists!');
+
+    //Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+    const user = new User ({
+        email: req.body.email,
+        password: hashedPassword
+    });
+
+    try {
+
+        //Create new user
+        const savedUser = await User.create(user);
+    
+        return res.status(201).json({ //201 new object created
             success: true,
-            data: user
+            data: user.id //will send back user id
         });      
     } catch (error) {
 
-        if(error.name === 'ValidationError') {
+        if(error.name === 'ValidationError') { //might not be needed
             const messages = Object.values(error.errors).map(val => val.message);
 
             res.status(400).json({
@@ -35,38 +56,22 @@ exports.createUser = async (req, res, next) => {
 // @route   POST /api/users/login
 // @access   Public
 exports.loginUser = async (req, res, next) => {
-    try {
-        const { email, password } = req.body;
+        
+    //Validate data
+    const { error } = loginValidation(req.body);
+    if(error) return res.status(400).send(error.details[0].message);
 
-        const user = await User.findOne(req.body.email);
+    //Check if the email already exists
+    const user = await User.findOne({email: req.body.email});
+    if (!user) return res.status(400).send('Email not found!');
 
-        if(user) {
-            return res.status(201).json({
-                success: true,
-                data: request
-            });
-        }
-        else{
-            return res.status(400).json({
-                success: false,
-                error: 'Login Error'
-            });            
-        }
-    
-    } catch (error) {
+    //Check for correct password
+    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    if(!validPassword) return res.status(400).send('Invalid password!');
 
-        if(error.name === 'ValidationError') {
-            const messages = Object.values(error.errors).map(val => val.message);
-
-            res.status(400).json({
-                success: false,
-                error: messages
-            })
-        } else {
-            return res.status(500).json({
-                success: false,
-                error: 'Server Error'
-            });  
-        }
-    }
+    //Create and assign token
+    const token = jwt.sign({_id: user._id}, process.env.TOKEN_SECRET);
+    res.header('auth-token', token).status(200).json({
+        success: true
+    });
 }

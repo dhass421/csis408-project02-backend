@@ -55,7 +55,32 @@ exports.createRequest = async (req, res, next) => {
 // @route   PATCH /api/requests/:id
 // @access   Public
 exports.approveRequest = async(req, res, next) => {
-    res.send('PATCH request');
+    try {
+        const data = req.body;
+        const id = req.params.id;
+        const request = await Request.findById(req.params.id)
+        
+        if(!request) {
+            return res.status(404).json({
+                success: false,
+                data: request
+            }); 
+        }
+
+        const patchedRequest = await Request.updateOne({_id: id}, {approvalStatus: data.approvalStatus});
+
+        return res.status(201).json({
+            success: true,
+            data: patchedRequest
+        });        
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: error
+        });        
+    }
+
+       
 }
 
 // @desc    Delete request

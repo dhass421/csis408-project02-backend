@@ -10,7 +10,7 @@ const RequestSchema = new mongoose.Schema({
         required: [true, 'Please choose a category']
     },
     approvalStatus: {
-        type: Boolean,
+        type: String,
         required: [true, 'Please set approval status']
     },
     createdAt: {

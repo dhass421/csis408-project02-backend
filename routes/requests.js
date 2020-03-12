@@ -10,7 +10,7 @@ router
 
 router
     .route('/:id')
-    .patch(approveRequest)
+    .put(approveRequest)
     .delete(deleteRequest);
 
 

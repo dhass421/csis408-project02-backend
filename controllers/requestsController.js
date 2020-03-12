@@ -67,7 +67,7 @@ exports.approveRequest = async(req, res, next) => {
             }); 
         }
 
-        const patchedRequest = await Request.update({_id: id}, {approvalStatus: data.approvalStatus});
+        const patchedRequest = await Request.updateOne({_id: id}, {approvalStatus: data.approvalStatus});
 
         return res.status(201).json({
             success: true,

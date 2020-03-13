@@ -4,7 +4,7 @@
   "description": "Backend for csis408 project02",
   "main": "server.js",
   "scripts": {
-    "start": "npm server.js",
+    "start": "node server.js",
     "server": "nodemon server"
   },
   "repository": {
